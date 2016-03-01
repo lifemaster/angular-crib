@@ -1,0 +1,16 @@
+<table class="table table-bordered">
+  <thead>
+    <tr class="info">
+      <th>#</th>
+      <th>Name</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="item in items">
+      <td>{{$index + 1}}</td>
+      <td>{{item.name}}</td>
+      <td>{{item.value}}</td>
+    </tr>
+  </tbody>
+</table>

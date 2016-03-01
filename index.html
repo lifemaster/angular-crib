@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/bootstrap.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/highlight-theme.css">
+  <script src="../js/angular.js"></script>
+  <script src="js/script.js"></script>
+  <title>Some Angular Application</title>
+</head>
+<body>
+  <div id="wrapper" class="container-fluid">
+    <h1 class="text-center">Изучаем фреймворк Angular JS</h1>
+    <h3 class="text-danger text-center">Angular Application:</h3>
+<pre><code class="js">
+/* --> Angular Application <-- */
+
+// Model
+
+// Module
+var app = angular.module('SampleApp', []);
+
+// Controller
+app.controller('SampleAppCtrl', function($scope) {
+
+  // Model Data
+  $scope.items = [
+    { name: 'Item 1', value: 'Value 1', property: 'Property 1' },
+    { name: 'Item 2', value: 'Value 2', property: 'Property 2' },
+    { name: 'Item 3', value: 'Value 3', property: 'Property 3' },
+    { name: 'Item 4', value: 'Value 4', property: 'Property 4' },
+    { name: 'Item 5', value: 'Value 5', property: 'Property 5' }
+  ];
+
+  $scope.selected = $scope.items[$scope.items.length - 3];
+  
+  /* -- for partial views (ng-include)-- */
+  $scope.tableView = 'table.html';
+  $scope.listView = 'list.html';
+
+  // default url value
+  $scope.url = $scope.tableView;
+
+  // default styles for switch buttons
+  $scope.showTableBtnClass = 'active';
+  $scope.showListBtnClass = '';
+
+  /* -- for partial views (ng-switch) -- */
+  $scope.options = [
+    { display: 'Нумерованный список',   value: 'numList'  },
+    { display: 'Маркерованный список',  value: 'markList' },
+    { display: 'Таблица',               value: 'table'    },
+    { display: 'Перечисление',          value: 'enum'     }
+  ];
+
+  // Default mode
+  $scope.mode = $scope.options[0];
+
+  /* --------> Behaviors <-------- */
+
+  // switching display data by table
+  $scope.showTable = function() {
+    $scope.url = $scope.tableView;
+
+    $scope.showTableBtnClass = 'active';
+    $scope.showListBtnClass = '';
+  }
+
+  // switching display data by list
+  $scope.showList = function() {
+    $scope.url = $scope.listView;
+
+    $scope.showTableBtnClass = '';
+    $scope.showListBtnClass = 'active';
+  }
+});
+</code></pre>
+    <h2 class="text-muted text-center">Использование привязок и стандартных директив</h2>
+    
+    <div id="user" ng-app="SampleApp" ng-controller="SampleAppCtrl">
+
+      <h3 class="text-danger text-center">
+        <span ng-non-bindable>{{expression}}</span>, ng-bind и ng-bind-template:
+      </h3>
+
+<pre ng-non-bindable><code>
+&lt;p&gt;Всего {{items.length}} элементов&lt;/p&gt;
+&lt;p&gt;Всего &lt;span ng-bind="items.length"&gt;&lt;/span&gt; элементов&lt;/p&gt;
+&lt;p ng-bind-template="Всего {{items.length}} элементов">&lt;/p&gt;
+</code></pre>
+
+      <p>Всего {{items.length}} элементов</p>
+      <p>Всего <span ng-bind="items.length"></span> элементов</p>
+      <p ng-bind-template="Всего {{items.length}} элементов"></p>
+      
+      <h3 class="text-danger text-center">Список элементов:</h3>
+
+<pre ng-non-bindable><code>
+&lt;ul class="list-unstyled"&gt;
+  &lt;li ng-repeat="item in items"&gt;{{item.name}} => {{item.value}}&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="form-group"&gt;
+  &lt;label for="one-way-data-binding" class="control-label"&gt;Однонаправленная привязка:&lt;/label&gt;
+  &lt;input id="one-way-data-binding" class="form-control" type="text" value="{{items[0].name}}"&gt;
+&lt;/div&gt;
+&lt;div class="form-group"&gt;
+  &lt;label for="two-way-data-binding" class="control-label"&gt;Двунаправленная привязка:&lt;/label&gt;
+  &lt;input id="two-way-data-binding" class="form-control" type="text" ng-model="items[1].name"&gt;
+&lt;/div&gt;
+</code></pre>
+      
+      <ul class="list-unstyled">
+        <li ng-repeat="item in items">{{item.name}} => {{item.value}}</li>
+      </ul>
+      <div class="form-group">
+        <label for="one-way-data-binding" class="control-label">Однонаправленная привязка:</label>
+        <input id="one-way-data-binding" class="form-control" type="text" value="{{items[0].name}}">
+      </div>
+      <div class="form-group">
+        <label for="two-way-data-binding" class="control-label">Двунаправленная привязка:</label>
+        <input id="two-way-data-binding" class="form-control" type="text" ng-model="items[1].name">
+      </div> 
+      
+      <h3 class="text-danger text-center">Таблица элементов:</h3>
+<pre ng-non-bindable><code>
+&lt;table class="table table-bordered"&gt;
+  &lt;thead&gt;
+    &lt;tr class="info"&gt;
+      &lt;th&gt;#&lt;/th&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;Value&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr ng-repeat="item in items" ng-class="$even ? 'success' : 'danger'"&gt;
+      &lt;td&gt;{{$index + 1}}&lt;/td&gt;
+      &lt;td ng-bind="item.name"&gt;&lt;/td&gt;
+      &lt;td ng-bind="item.value"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</code></pre>      
+      <table class="table table-bordered">
+        <thead>
+          <tr class="info">
+            <th>#</th>
+            <th>Name</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in items" ng-class="$even ? 'success' : 'danger'">
+            <td>{{$index + 1}}</td>
+            <td ng-bind="item.name"></td>
+            <td ng-bind="item.value"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="text-danger text-center">Перечисление свойств элементов<br>(вложенный ng-repeat):</h3>
+<pre ng-non-bindable><code>
+&lt;p ng-repeat="item in items"&gt;
+  Свойства {{item.name}}:
+  &lt;span ng-repeat="(key, value) in item"&gt;
+    {{key}} = {{value}}&lt;span ng-if="!$last"&gt;, &lt;/span&gt;&lt;span ng-if="$last"&gt;;&lt;/span&gt;
+  &lt;/span&gt;
+&lt;/p&gt;
+</code></pre>
+      <p ng-repeat="item in items">
+        Свойства {{item.name}}:
+        <span ng-repeat="(key, value) in item">
+          {{key}} = {{value}}<span ng-if="!$last">, </span><span ng-if="$last">;</span>
+        </span>
+      </p>
+
+      <h3 class="text-danger text-center">Перечисление свойств элементов<br>(ng-repeat-start/ng-repeat-end):</h3>
+<pre ng-non-bindable><code>
+&lt;p ng-repeat-start="item in items"&gt;
+  {{$index + 1}}) {{item.name}}:&lt;br&gt;
+  &lt;span class="text-muted"&gt;{{item.value}}&lt;/span&gt;,
+  &lt;span class="text-muted"&gt;{{item.property}}&lt;/span&gt;.
+&lt;/p&gt;
+&lt;hr ng-repeat-end ng-if="!$last"&gt;
+</code></pre>
+      <p ng-repeat-start="item in items">
+        {{$index + 1}}) {{item.name}}:<br>
+        <span class="text-muted">{{item.value}}</span>,
+        <span class="text-muted">{{item.property}}</span>.
+      </p>
+      <hr ng-repeat-end ng-if="!$last">
+      
+      <h2 class="text-muted text-center">Options</h2>
+      <h3 class="text-danger text-center">Двунаправленная привязка с ng-options:</h3>
+
+<pre ng-non-bindable><code>
+&lt;p&gt;&lt;select class="form-control" ng-model="selected" ng-options="item.name for item in items track by item.value">&lt;/select&gt;&lt;/p&gt;
+&lt;p&gt;Вы выбрали элемент с именем: {{selected.name}}&lt;/p&gt;
+&lt;p&gt;Его value = "{{selected.value}}";&lt;/p&gt;
+&lt;p&gt;Его property = "{{selected.property}}";&lt;/p&gt;
+</code></pre>
+
+      <p><select class="form-control" ng-model="selected" ng-options="item.name for item in items track by item.value"></select></p>
+      <p>Вы выбрали элемент с именем: {{selected.name}}</p>
+      <p>Его value = "{{selected.value}}";</p>
+      <p>Его property = "{{selected.property}}";</p>
+
+      <h2 class="text-muted text-center">Partial_views</h2>
+      <h3 class="text-danger text-center">
+        Директива ng-include:<br>
+        <i class="small">(подгрузка шаблонов через AJAX)</i>
+      </h3>
+      
+      <h4 class="text-info">HTML-элемент:</h4>
+<pre ng-non-bindable><code>
+&lt;ng-include src="tableView"&gt;&lt;/ng-include&gt;
+</code></pre>
+      <ng-include src="tableView"></ng-include>
+      
+      <h4 class="text-info">Атрибут:</h4>
+<pre ng-non-bindable><code>
+&lt;div ng-include="tableView"&gt;&lt;/div&gt;
+</code></pre>
+      <div ng-include="tableView"></div>
+
+      <h4 class="text-info">CSS-класс:</h4>
+<pre ng-non-bindable><code>
+&lt;div class="ng-include: tableView"&gt;&lt;/div&gt;
+</code></pre>
+      <div class="ng-include: tableView"></div>
+
+      <h4 class="text-info">Динамическое представление:</h4>
+<pre ng-non-bindable><code>
+&lt;div class="btn-group" style="padding: 10px;"&gt;
+  &lt;button class="btn btn-default" ng-class="showTableBtnClass" ng-click="showTable()"&gt;Таблица&lt;/button&gt;
+  &lt;button class="btn btn-default" ng-class="showListBtnClass" ng-click="showList()"&gt;Список&lt;/button&gt;
+&lt;/div&gt;
+&lt;ng-include src="url"&gt;&lt;/ng-include&gt;
+</code></pre>
+      <div class="btn-group" style="padding: 10px;">
+        <button class="btn btn-default" ng-class="showTableBtnClass" ng-click="showTable()">Таблица</button>
+        <button class="btn btn-default" ng-class="showListBtnClass" ng-click="showList()">Список</button>
+      </div>
+      <ng-include src="url"></ng-include>
+
+      <h3 class="text-danger text-center">
+        Директива ng-switch:<br>
+        <i class="small">(переключение видимости существующих элементов в DOM)</i>
+      </h3>
+<pre ng-non-bindable><code>
+&lt;select class="form-control" ng-model="mode" ng-options="type.display for type in options track by type.value"&gt;&lt;/select&gt;
+&lt;div ng-switch on="mode.value" style="margin-top: 20px"&gt;
+  &lt;ul ng-switch-when="markList"&gt;
+    &lt;li ng-repeat="item in items"&gt;{{item.name}}&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;ol ng-switch-when="numList"&gt;
+    &lt;li ng-repeat="item in items"&gt;{{item.name}}&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;table class="table table-bordered table-striped" ng-switch-when="table"&gt;
+    &lt;thead&gt;
+      &lt;tr class="info"&gt;
+        &lt;th&gt;#&lt;/th&gt;
+        &lt;th&gt;Name&lt;/th&gt;
+        &lt;th&gt;Value&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr ng-repeat="item in items"&gt;
+        &lt;td&gt;{{$index + 1}}&lt;/td&gt;
+        &lt;td&gt;{{item.name}}&lt;/td&gt;
+        &lt;td&gt;{{item.value}}&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+  &lt;div ng-switch-when="enum"&gt;
+    &lt;p ng-repeat-start="item in items"&gt;
+      {{$index + 1}}) {{item.name}}:&lt;br&gt;
+      &lt;span class="text-muted"&gt;{{item.value}}&lt;/span&gt;,
+      &lt;span class="text-muted"&gt;{{item.property}}&lt;/span&gt;.
+    &lt;/p&gt;
+    &lt;hr ng-repeat-end ng-if="!$last"&gt;
+  &lt;/div&gt;
+&lt;/div&gt; 
+</code></pre>      
+      <select class="form-control" ng-model="mode" ng-options="type.display for type in options track by type.value"></select>
+      <div ng-switch on="mode.value" style="margin-top: 20px">
+        <ul ng-switch-when="markList">
+          <li ng-repeat="item in items">{{item.name}}</li>
+        </ul>
+        <ol ng-switch-when="numList">
+          <li ng-repeat="item in items">{{item.name}}</li>
+        </ol>
+        <table class="table table-bordered table-striped" ng-switch-when="table">
+          <thead>
+            <tr class="info">
+              <th>#</th>
+              <th>Name</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in items">
+              <td>{{$index + 1}}</td>
+              <td>{{item.name}}</td>
+              <td>{{item.value}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div ng-switch-when="enum">
+          <p ng-repeat-start="item in items">
+            {{$index + 1}}) {{item.name}}:<br>
+            <span class="text-muted">{{item.value}}</span>,
+            <span class="text-muted">{{item.property}}</span>.
+          </p>
+          <hr ng-repeat-end ng-if="!$last">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src='js/highlight.pack.js'/></script>
+  <script type='text/javascript'>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
